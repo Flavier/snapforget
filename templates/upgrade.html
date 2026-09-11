@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ t('upgrade.title') }} · {{ t('brand') }}{% endblock %}
+{% block content %}
+<section class="narrow panel upgrade">
+  <h1>{{ t('upgrade.title') }}</h1>
+  <p class="lede">{{ t('upgrade.lead') }}</p>
+  <p class="price-big">{{ t('upgrade.price') }}</p>
+  {% if user.is_paid %}
+  <p>{{ t('upgrade.paid') }}</p>
+  {% if can_manage %}
+  <form method="post" action="/app/billing">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button class="btn" type="submit">{{ t('upgrade.manage') }}</button>
+  </form>
+  {% endif %}
+  <p><a class="btn btn-ghost" href="/app">{{ t('upgrade.back') }}</a></p>
+  {% elif pending %}
+  <p>{{ t('upgrade.pending') }}</p>
+  <p><a class="btn" href="/app">{{ t('upgrade.back') }}</a></p>
+  {% elif payments_on %}
+  <form method="post" action="/upgrade/checkout">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button class="btn" type="submit">{{ t('upgrade.pay') }}</button>
+  </form>
+  <p><a class="btn btn-ghost" href="/app">{{ t('upgrade.back') }}</a></p>
+  {% else %}
+  <p>{{ t('upgrade.soon') }}</p>
+  <a class="btn" href="/app">{{ t('upgrade.back') }}</a>
+  {% endif %}
+</section>
+{% endblock %}

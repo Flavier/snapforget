@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ t('auth.register_title') }} · {{ t('brand') }}{% endblock %}
+{% block content %}
+<section class="narrow panel">
+  <h1>{{ t('auth.register_title') }}</h1>
+  {% if error %}
+  <p class="error" role="alert">{{ t(error) }}</p>
+  {% endif %}
+  <form method="post" action="/register" class="stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input class="hp" type="text" name="website" value="" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <label>
+      {{ t('auth.email') }}
+      <input type="email" name="email" value="{{ email }}" autocomplete="email" required>
+    </label>
+    <label>
+      {{ t('auth.password') }}
+      <input type="password" name="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+      <span class="hint">{{ t('auth.password_hint') }}</span>
+    </label>
+    <label class="check">
+      <input type="checkbox" name="accept" value="1" required>
+      <span>{{ t('auth.accept_privacy') }}</span>
+    </label>
+    <p class="hint"><a href="/privacy">{{ t('legal.privacy_title') }}</a> · <a href="/terms">{{ t('legal.terms_title') }}</a></p>
+    <button class="btn" type="submit">{{ t('auth.submit_register') }}</button>
+  </form>
+  <p class="muted"><a href="/login">{{ t('auth.to_login') }}</a></p>
+</section>
+{% endblock %}

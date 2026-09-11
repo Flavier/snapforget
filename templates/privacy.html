@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ t('legal.privacy_title') }} · {{ t('brand') }}{% endblock %}
+{% block content %}
+<article class="legal">
+  <h1>{{ t('legal.privacy_title') }}</h1>
+  <p class="muted">{{ t('legal.updated') }}</p>
+
+  <h2>{{ t('legal.who_h') }}</h2>
+  <p>{{ t('legal.who_p', name=legal_name, email=legal_email) }}</p>
+  {% if legal_address %}
+  <p>{{ t('legal.address_p', address=legal_address) }}</p>
+  {% endif %}
+
+  <h2>{{ t('legal.what_h') }}</h2>
+  <p>{{ t('legal.what_p') }}</p>
+
+  <h2>{{ t('legal.why_h') }}</h2>
+  <p>{{ t('legal.why_p') }}</p>
+
+  <h2>{{ t('legal.photos_h') }}</h2>
+  <p>{{ t('legal.photos_p') }}</p>
+
+  <h2>{{ t('legal.ai_h') }}</h2>
+  <p>{{ t('legal.ai_p') }}</p>
+
+  <h2>{{ t('legal.mail_h') }}</h2>
+  <p>{{ t('legal.mail_p') }}</p>
+
+  <h2>{{ t('legal.keep_h') }}</h2>
+  <p>{{ t('legal.keep_p') }}</p>
+
+  <h2>{{ t('legal.cookies_h') }}</h2>
+  <p>{{ t('legal.cookies_p') }}</p>
+
+  <h2>{{ t('legal.rights_h') }}</h2>
+  <p>{{ t('legal.rights_p') }}</p>
+
+  <h2>{{ t('legal.contact_h') }}</h2>
+  <p>{{ t('legal.contact_p', email=legal_email) }}</p>
+</article>
+{% endblock %}

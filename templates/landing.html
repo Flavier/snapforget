@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="kicker">{{ t('landing.kicker') }}</p>
+    <h1>{{ t('landing.headline') }}</h1>
+    <p class="lede">{{ t('landing.sub') }}</p>
+    <div class="hero-actions">
+      <a class="btn btn-lg" href="/register">{{ t('landing.cta') }}</a>
+      <a class="btn btn-ghost btn-lg" href="/login">{{ t('landing.cta_secondary') }}</a>
+    </div>
+    <p class="trust">{{ t('landing.trust') }}</p>
+  </div>
+  <div class="hero-stage" aria-hidden="true">
+    <div class="hero-docs">
+      <div class="doc-stack">
+        <article class="doc-stk">
+          <div class="doc-stk-head">
+            <span>{{ t('landing.hero_card') }}</span>
+            <span class="doc-plate">BA 312AB</span>
+          </div>
+          <p class="doc-meta">{{ t('form.expires') }}</p>
+          <p class="doc-date">18. 9. 2026</p>
+          <div class="stk-badge"><span>26</span></div>
+        </article>
+        <article class="doc-receipt">
+          <p class="rec-shop">ELEKTRO</p>
+          <p class="rec-item">Bosch WAN282</p>
+          <p class="rec-dots">················</p>
+          <p class="rec-row"><span>{{ t('kinds.warranty') }}</span><span>24 m</span></p>
+          <p class="rec-row"><span>{{ t('form.expires') }}</span><span>12. 4. 2027</span></p>
+          <p class="rec-cut"></p>
+        </article>
+      </div>
+      <div class="ping">
+        <strong>{{ t('landing.hero_days') }}</strong>
+        <span>{{ t('landing.hero_ping') }}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <h2>{{ t('landing.how_title') }}</h2>
+  <ol class="steps">
+    <li>
+      <span class="n">1</span>
+      <h3>{{ t('landing.step1_title') }}</h3>
+      <p>{{ t('landing.step1') }}</p>
+    </li>
+    <li>
+      <span class="n">2</span>
+      <h3>{{ t('landing.step2_title') }}</h3>
+      <p>{{ t('landing.step2') }}</p>
+    </li>
+    <li>
+      <span class="n">3</span>
+      <h3>{{ t('landing.step3_title') }}</h3>
+      <p>{{ t('landing.step3') }}</p>
+    </li>
+  </ol>
+</section>
+
+<section class="section">
+  <h2>{{ t('landing.why_title') }}</h2>
+  <div class="why">
+    <article>
+      <h3>{{ t('landing.why1_title') }}</h3>
+      <p>{{ t('landing.why1') }}</p>
+    </article>
+    <article>
+      <h3>{{ t('landing.why2_title') }}</h3>
+      <p>{{ t('landing.why2') }}</p>
+    </article>
+    <article>
+      <h3>{{ t('landing.why3_title') }}</h3>
+      <p>{{ t('landing.why3') }}</p>
+    </article>
+  </div>
+</section>
+
+<section class="section">
+  <h2>{{ t('landing.kinds_title') }}</h2>
+  <ul class="kind-chips">
+    {% for key, label in kinds %}
+    <li>{{ label }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="section price-block" id="cena">
+  <h2>{{ t('landing.price_title') }}</h2>
+  <div class="price-row">
+    <div class="price-card">
+      <p class="price-tag">{{ t('landing.price_try') }}</p>
+      <p class="price-label">{{ t('landing.price_free') }}</p>
+      <a class="btn btn-ghost" href="/register">{{ t('landing.cta') }}</a>
+    </div>
+    <div class="price-card is-paid">
+      <p class="price-tag">{{ t('landing.price_year') }}</p>
+      <p class="price-label">{{ t('landing.price_paid') }}</p>
+      <p class="muted">{{ t('landing.price_note') }}</p>
+      <a class="btn" href="/register">{{ t('landing.cta') }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

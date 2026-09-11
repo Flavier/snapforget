@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}{{ t('form.new_title') if mode == 'new' else t('form.edit_title') }} · {{ t('brand') }}{% endblock %}
+{% block content %}
+<section class="narrow panel">
+  <h1>{{ t('form.new_title') if mode == 'new' else t('form.edit_title') }}</h1>
+  {% if error %}
+  <p class="error" role="alert">{{ t(error) }}</p>
+  {% endif %}
+  <form method="post" enctype="multipart/form-data" class="stack" action="{{ '/app/new' if mode == 'new' else '/app/' ~ document.id ~ '/edit' }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="scan_token" id="scan_token" value="">
+    <div class="photo-field">
+      <p class="label">{{ t('form.photo') }}</p>
+      <label class="drop">
+        <input id="photo" type="file" name="photo" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" capture="environment">
+        <span class="drop-preview">
+          {% if document and document.photo_path %}
+          <img src="/app/{{ document.id }}/photo" alt="">
+          {% endif %}
+        </span>
+        <span class="drop-cta">{{ t('form.photo_change') }}</span>
+      </label>
+      <p id="scan-status" class="scan-status" hidden
+         data-reading="{{ t('form.scan_reading') }}"
+         data-ok="{{ t('form.scan_ok') }}"
+         data-fail="{{ t('form.scan_fail') }}"
+         data-off="{{ t('form.scan_off') }}"
+         data-limit="{{ t('form.scan_limit') }}"></p>
+      <p class="hint">{{ t('form.photo_hint') }}</p>
+    </div>
+
+    <label>
+      {{ t('form.kind') }}
+      <select name="kind" id="kind">
+        {% for key, label in kinds %}
+        <option value="{{ key }}" {% if values.kind == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>
+      {{ t('form.title') }}
+      <input id="title" type="text" name="title" value="{{ values.title }}" maxlength="200" placeholder="{{ t('form.title_hint') }}">
+    </label>
+
+    <label>
+      {{ t('form.expires') }}
+      <input id="expires_on" type="date" name="expires_on" value="{{ values.expires_on }}" required>
+    </label>
+
+    <label>
+      {{ t('form.notes') }}
+      <textarea id="notes" name="notes" rows="3" maxlength="4000">{{ values.notes }}</textarea>
+    </label>
+
+    <fieldset class="checks">
+      <legend>{{ t('form.reminders') }}</legend>
+      <div class="checks-row">
+        <label class="check"><input type="checkbox" name="remind_30" value="1" {% if values.remind_30 %}checked{% endif %}> {{ t('form.r30') }}</label>
+        <label class="check"><input type="checkbox" name="remind_7" value="1" {% if values.remind_7 %}checked{% endif %}> {{ t('form.r7') }}</label>
+        <label class="check"><input type="checkbox" name="remind_1" value="1" {% if values.remind_1 %}checked{% endif %}> {{ t('form.r1') }}</label>
+      </div>
+      <p class="hint">{{ t('form.reminders_hint') }}</p>
+    </fieldset>
+
+    <div class="row-actions">
+      <button class="btn" type="submit">{{ t('form.save') }}</button>
+      <a class="btn btn-ghost" href="{{ '/app/' ~ document.id if document else '/app' }}">{{ t('form.cancel') }}</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

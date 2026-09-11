@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ t('auth.reset_title') }} · {{ t('brand') }}{% endblock %}
+{% block content %}
+<section class="narrow panel">
+  <h1>{{ t('auth.reset_title') }}</h1>
+  {% if error %}
+  <p class="error" role="alert">{{ t(error) }}</p>
+  {% endif %}
+  <form method="post" action="/reset/{{ token }}" class="stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label>
+      {{ t('auth.password') }}
+      <input type="password" name="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+      <span class="hint">{{ t('auth.password_hint') }}</span>
+    </label>
+    <button class="btn" type="submit">{{ t('auth.reset_submit') }}</button>
+  </form>
+</section>
+{% endblock %}

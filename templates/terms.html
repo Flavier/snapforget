@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ t('legal.terms_title') }} · {{ t('brand') }}{% endblock %}
+{% block content %}
+<article class="legal">
+  <h1>{{ t('legal.terms_title') }}</h1>
+  <p class="muted">{{ t('legal.updated') }}</p>
+  <p>{{ t('legal.terms_p1') }}</p>
+  <p>{{ t('legal.terms_p2') }}</p>
+  <p>{{ t('legal.terms_p3') }}</p>
+  <p>{{ t('legal.terms_p4') }}</p>
+  <p>{{ t('legal.terms_p5', email=legal_email) }}</p>
+</article>
+{% endblock %}

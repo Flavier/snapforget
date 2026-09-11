@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{{ t('pwa.offline_title') }} · {{ t('brand') }}{% endblock %}
+{% block content %}
+<section class="narrow panel">
+  <h1>{{ t('pwa.offline_title') }}</h1>
+  <p class="lede">{{ t('pwa.offline') }}</p>
+  <a class="btn" href="/">{{ t('nav.home') }}</a>
+</section>
+{% endblock %}

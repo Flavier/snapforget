@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ t('app.title') }} · {{ t('brand') }}{% endblock %}
+{% block content %}
+<section class="dash-head">
+  <h1>{{ t('app.title') }}</h1>
+  {% if not at_limit %}
+  <a class="btn" href="/app/new">{{ t('app.add') }}</a>
+  {% endif %}
+</section>
+
+{% if at_limit %}
+<p class="note">{{ t('app.limit') }} <a href="/upgrade">{{ t('landing.price_paid') }}</a></p>
+{% endif %}
+
+{% if google_oauth and not google_connected %}
+<p class="banner cal-note">{{ t('detail.google_hint') }} <a href="/app/google/connect">{{ t('detail.google_connect') }}</a></p>
+{% elif google_connected %}
+<div class="banner is-ok cal-note">
+  <span>{{ t('detail.google_hint_on') }}</span>
+  <form method="post" action="/app/google/disconnect" class="inline">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button type="submit" class="linkish">{{ t('detail.google_disconnect') }}</button>
+  </form>
+</div>
+{% endif %}
+
+{% if not documents %}
+<div class="empty">
+  <div class="empty-photo" aria-hidden="true"></div>
+  <h2>{{ t('app.empty_title') }}</h2>
+  <p>{{ t('app.empty') }}</p>
+  <a class="btn btn-lg" href="/app/new">{{ t('app.empty_cta') }}</a>
+</div>
+{% else %}
+<ul class="cards">
+  {% for doc in documents %}
+  <li>
+    <a class="card status-{{ doc.status() }}" href="/app/{{ doc.id }}">
+      <div class="card-photo">
+        {% if doc.photo_path %}
+        <img src="/app/{{ doc.id }}/photo" alt="">
+        {% else %}
+        <span class="ph" aria-hidden="true"></span>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <p class="kind">{{ kind_label.get(doc.kind, doc.kind) }}</p>
+        {% set shown = card_title(doc.title) %}
+        <h2{% if shown != doc.title %} title="{{ doc.title }}"{% endif %}>{{ shown }}</h2>
+        <p class="when">{{ format_date(doc.expires_on) }}</p>
+        <p class="pill">{{ t('app.status_' + doc.status()) }} · {{ days_label(doc.days_left()) }}</p>
+      </div>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

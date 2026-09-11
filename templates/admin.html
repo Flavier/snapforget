@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block extra_head %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block title %}{{ t('admin.title') }} · {{ t('brand') }}{% endblock %}
+{% block content %}
+<section class="admin">
+  <h1>{{ t('admin.title') }}</h1>
+  <p class="lede">{{ t('admin.count', n=listing.total) }}</p>
+  <p class="muted">{{ t('admin.paid_note') }}</p>
+
+  <form method="get" action="/admin" class="admin-filters">
+    <label>
+      {{ t('admin.search') }}
+      <input type="search" name="q" value="{{ filters.q }}" maxlength="80" placeholder="email">
+    </label>
+    <label>
+      {{ t('admin.paid_filter') }}
+      <select name="paid">
+        <option value="" {% if not filters.paid %}selected{% endif %}>{{ t('admin.paid_all') }}</option>
+        <option value="0" {% if filters.paid == '0' %}selected{% endif %}>{{ t('admin.free') }}</option>
+        <option value="1" {% if filters.paid == '1' %}selected{% endif %}>{{ t('admin.paid') }}</option>
+      </select>
+    </label>
+    <label>
+      {{ t('admin.kind_filter') }}
+      <select name="kind">
+        <option value="" {% if not filters.kind %}selected{% endif %}>{{ t('admin.kind_all') }}</option>
+        {% for key, label in kinds %}
+        <option value="{{ key }}" {% if filters.kind == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <button class="btn" type="submit">{{ t('admin.filter') }}</button>
+    {% if filters.paid or filters.kind or filters.q %}
+    <a class="nav-link" href="/admin">{{ t('admin.clear') }}</a>
+    {% endif %}
+  </form>
+
+  {% if listing.rows %}
+  <div class="table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>{{ t('auth.email') }}</th>
+          <th>{{ t('admin.docs') }}</th>
+          <th>{{ t('admin.kinds') }}</th>
+          <th>{{ t('admin.plan') }}</th>
+          <th>{{ t('nav.language') }}</th>
+          <th>{{ t('admin.since') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in listing.rows %}
+        <tr>
+          <td>{{ item.user.email }}</td>
+          <td>{{ item.docs }}</td>
+          <td class="kinds">
+            {% if item.kinds %}
+              {% for key, n in item.kinds %}{{ kind_label.get(key, key) }}{% if n > 1 %} ×{{ n }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}
+            {% else %}
+              —
+            {% endif %}
+          </td>
+          <td>{% if item.user.is_paid %}{{ t('admin.paid') }}{% else %}{{ t('admin.free') }}{% endif %}</td>
+          <td>{{ item.user.locale or '—' }}</td>
+          <td>{{ item.user.created_at.strftime('%Y-%m-%d') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if listing.pages > 1 %}
+  <nav class="pager" aria-label="{{ t('admin.pages') }}">
+    {% if listing.page > 1 %}
+    <a href="/admin{% if qs(listing.page - 1) %}?{{ qs(listing.page - 1) }}{% endif %}">{{ t('admin.prev') }}</a>
+    {% endif %}
+    <span>{{ listing.page }} / {{ listing.pages }}</span>
+    {% if listing.page < listing.pages %}
+    <a href="/admin?{{ qs(listing.page + 1) }}">{{ t('admin.next') }}</a>
+    {% endif %}
+  </nav>
+  {% endif %}
+  {% else %}
+  <p>{{ t('admin.empty') }}</p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ document.title }} · {{ t('brand') }}{% endblock %}
+{% block content %}
+<article class="detail">
+  <div class="detail-photo">
+    {% if document.photo_path %}
+    <img src="/app/{{ document.id }}/photo" alt="{{ document.title }}">
+    {% else %}
+    <div class="ph-lg">{{ t('detail.no_photo') }}</div>
+    {% endif %}
+  </div>
+  <div class="detail-body">
+    <p class="kind">{{ kind_label.get(document.kind, document.kind) }}</p>
+    <h1>{{ document.title }}</h1>
+    <p class="pill status-{{ document.status() }}">{{ t('app.status_' + document.status()) }} · {{ days_label(document.days_left()) }}</p>
+    <p class="when">{{ t('detail.expires') }}: <strong>{{ format_date(document.expires_on) }}</strong></p>
+    {% if document.notes %}
+    <p class="notes">{{ document.notes }}</p>
+    {% endif %}
+
+    <div class="cal">
+      <p class="label">{{ t('detail.calendar') }}</p>
+      {% if google_connected %}
+      <p class="hint">{{ t('detail.google_hint_on') }}</p>
+      <div class="row-actions">
+        {% if google_event_url %}
+        <a class="btn" href="{{ google_event_url }}" target="_blank" rel="noopener">{{ t('detail.google_open') }}</a>
+        {% endif %}
+        <a class="btn btn-ghost" href="/app/{{ document.id }}/ics">{{ t('detail.ics') }}</a>
+      </div>
+      {% elif google_oauth %}
+      <p class="hint">{{ t('detail.google_hint') }}</p>
+      <div class="row-actions">
+        <a class="btn" href="/app/google/connect">{{ t('detail.google_connect') }}</a>
+        <a class="btn btn-ghost" href="{{ google_url }}" target="_blank" rel="noopener">{{ t('detail.google_once') }}</a>
+        <a class="btn btn-ghost" href="/app/{{ document.id }}/ics">{{ t('detail.ics') }}</a>
+      </div>
+      {% else %}
+      <p class="hint">{{ t('detail.google_once_hint') }}</p>
+      <div class="row-actions">
+        <a class="btn" href="{{ google_url }}" target="_blank" rel="noopener">{{ t('detail.google_once') }}</a>
+        <a class="btn btn-ghost" href="/app/{{ document.id }}/ics">{{ t('detail.ics') }}</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="row-actions">
+      <a class="btn btn-ghost" href="/app/{{ document.id }}/edit">{{ t('detail.edit') }}</a>
+      <form method="post" action="/app/{{ document.id }}/delete" class="inline" data-confirm="{{ t('detail.delete_confirm') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="btn btn-danger">{{ t('detail.delete') }}</button>
+      </form>
+    </div>
+  </div>
+</article>
+{% endblock %}
