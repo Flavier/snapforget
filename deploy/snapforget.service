@@ -1,0 +1,11 @@
+[Unit]
+Description=SnapForget
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/snapforget
+ExecStart=/opt/snapforget/venv/bin/python /opt/snapforget/run_prod.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
