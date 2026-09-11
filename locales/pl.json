@@ -168,6 +168,11 @@
     "install": "Zainstaluj aplikację",
     "ios_title": "Dodaj do ekranu początkowego",
     "ios_hint": "Stuknij Udostępnij, potem Dodaj do ekranu początkowego. Potem możesz zamknąć przeglądarkę.",
+    "how": "Ikona na ekranie głównym",
+    "how_lead": "Aplikacja w telefonie lub na pasku. Bez sklepu.",
+    "how_ios": "iPhone: Udostępnij → Dodaj do ekranu początkowego.",
+    "how_android": "Android Chrome: menu ⋮ → Dodaj do ekranu głównego.",
+    "how_desktop": "Komputer Chrome: menu ⋮ → Zainstaluj aplikację (albo ikona na pasku adresu).",
     "offline_title": "Jesteś offline",
     "offline": "Aplikacja tu jest, ale do wczytania dokumentów potrzebna jest sieć. Spróbuj, gdy będziesz online."
   },

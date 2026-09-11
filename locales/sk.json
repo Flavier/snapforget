@@ -175,6 +175,11 @@
     "install": "Nainštalovať appku",
     "ios_title": "Pridať na plochu",
     "ios_hint": "Ťukni na Zdieľať, potom Pridať na plochu. Potom môžeš prehliadač zavrieť.",
+    "how": "Ikona na plochu",
+    "how_lead": "Appka na telefóne alebo v paneli, bez obchodu.",
+    "how_ios": "iPhone: Zdieľať → Pridať na plochu.",
+    "how_android": "Android Chrome: menu ⋮ → Pridať na plochu.",
+    "how_desktop": "Počítač Chrome: menu ⋮ → Inštalovať appku (alebo ikona v adresnom riadku).",
     "offline_title": "Si offline",
     "offline": "Appka je tu, ale na načítanie dokladov treba sieť. Skús to, keď budeš online."
   },

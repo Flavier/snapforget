@@ -168,6 +168,11 @@
     "install": "App installeren",
     "ios_title": "Zet op beginscherm",
     "ios_hint": "Tik op Delen, dan Zet op beginscherm. Daarna kun je de browser sluiten.",
+    "how": "Icoon op beginscherm",
+    "how_lead": "De app op je telefoon of taakbalk. Geen store.",
+    "how_ios": "iPhone: Delen → Zet op beginscherm.",
+    "how_android": "Android Chrome: menu ⋮ → Toevoegen aan startscherm.",
+    "how_desktop": "Computer Chrome: menu ⋮ → App installeren (of het icoon in de adresbalk).",
     "offline_title": "Je bent offline",
     "offline": "De app is er, maar we hebben netwerk nodig voor je documenten. Probeer het weer online."
   },

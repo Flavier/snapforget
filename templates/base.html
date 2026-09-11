@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Mono:wght@400;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/css/app.css?v=18">
+  <link rel="stylesheet" href="/static/css/app.css?v=19">
   {% block extra_head %}{% endblock %}
 </head>
 <body{% if user and not is_admin %} class="has-tabbar"{% endif %}>
@@ -40,7 +40,7 @@
           {% endfor %}
         </select>
       </form>
-      <button type="button" class="btn btn-small btn-ghost install-btn" id="install-app" hidden>{{ t('nav.install') }}</button>
+      <button type="button" class="btn btn-small btn-ghost install-btn" id="install-app">{{ t('nav.install') }}</button>
       {% if is_admin %}
       <a class="nav-link" href="/admin">{{ t('admin.title') }}</a>
       <form method="post" action="/admin/logout" class="inline">
@@ -71,7 +71,7 @@
   </main>
 
   <div class="ios-hint" id="ios-hint" hidden>
-    <p><strong>{{ t('pwa.ios_title') }}</strong> {{ t('pwa.ios_hint') }}</p>
+    <p><strong>{{ t('pwa.how') }}</strong> {{ t('pwa.how_ios') }} {{ t('pwa.how_android') }} {{ t('pwa.how_desktop') }}</p>
     <button type="button" class="ios-hint-close" id="ios-hint-close" aria-label="OK">×</button>
   </div>
 
@@ -102,6 +102,6 @@
     </a>
   </nav>
   {% endif %}
-  <script src="/static/js/app.js?v=8" defer></script>
+  <script src="/static/js/app.js?v=9" defer></script>
 </body>
 </html>

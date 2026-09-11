@@ -36,7 +36,6 @@
         <a class="btn btn-ghost" href="/app/{{ document.id }}/ics">{{ t('detail.ics') }}</a>
       </div>
       {% else %}
-      <p class="hint">{{ t('detail.google_once_hint') }}</p>
       <div class="row-actions">
         <a class="btn" href="{{ google_url }}" target="_blank" rel="noopener">{{ t('detail.google_once') }}</a>
         <a class="btn btn-ghost" href="/app/{{ document.id }}/ics">{{ t('detail.ics') }}</a>

@@ -168,6 +168,11 @@
     "install": "Instalar app",
     "ios_title": "Adicionar ao ecrã inicial",
     "ios_hint": "Toca em Partilhar e depois Adicionar ao ecrã inicial. Depois podes fechar o browser.",
+    "how": "Ícone no ecrã inicial",
+    "how_lead": "A app no telemóvel ou na barra. Sem loja.",
+    "how_ios": "iPhone: Partilhar → Adicionar ao ecrã inicial.",
+    "how_android": "Android Chrome: menu ⋮ → Adicionar ao ecrã inicial.",
+    "how_desktop": "Computador Chrome: menu ⋮ → Instalar app (ou o ícone na barra de endereço).",
     "offline_title": "Estás offline",
     "offline": "A app está aqui, mas precisamos de rede para carregar os documentos. Tenta de novo quando estiveres online."
   },

@@ -175,6 +175,11 @@
     "install": "Install app",
     "ios_title": "Add to Home Screen",
     "ios_hint": "Tap Share, then Add to Home Screen. After that you can close the browser.",
+    "how": "Add to home screen",
+    "how_lead": "Put the app on your phone or taskbar. No store.",
+    "how_ios": "iPhone: Share → Add to Home Screen.",
+    "how_android": "Android Chrome: menu ⋮ → Add to Home screen.",
+    "how_desktop": "Computer Chrome: menu ⋮ → Install app (or the icon in the address bar).",
     "offline_title": "You're offline",
     "offline": "The app is here, but we need a connection to load your documents. Try again when you're back online."
   },

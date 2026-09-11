@@ -168,6 +168,11 @@
     "install": "App telepítése",
     "ios_title": "Hozzáadás a kezdőképernyőhöz",
     "ios_hint": "Koppints a Megosztásra, majd a Hozzáadás a kezdőképernyőhöz. Utána bezárhatod a böngészőt.",
+    "how": "Ikon a kezdőképernyőre",
+    "how_lead": "Az app a telefonon vagy a tálcán. Bolt nélkül.",
+    "how_ios": "iPhone: Megosztás → Hozzáadás a kezdőképernyőhöz.",
+    "how_android": "Android Chrome: menü ⋮ → Hozzáadás a kezdőképernyőhöz.",
+    "how_desktop": "Számítógép Chrome: menü ⋮ → Alkalmazás telepítése (vagy az ikon a címsorban).",
     "offline_title": "Nincs hálózat",
     "offline": "Az app itt van, de a dokumentumokhoz kell hálózat. Próbáld újra, ha online leszel."
   },

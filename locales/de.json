@@ -168,6 +168,11 @@
     "install": "App installieren",
     "ios_title": "Zum Home-Bildschirm",
     "ios_hint": "Tippe auf Teilen, dann Zum Home-Bildschirm. Danach kannst du den Browser schließen.",
+    "how": "Zum Home-Bildschirm",
+    "how_lead": "Die App aufs Handy oder in die Taskleiste. Ohne Store.",
+    "how_ios": "iPhone: Teilen → Zum Home-Bildschirm.",
+    "how_android": "Android Chrome: Menü ⋮ → Zum Startbildschirm.",
+    "how_desktop": "Computer Chrome: Menü ⋮ → App installieren (oder das Symbol in der Adressleiste).",
     "offline_title": "Du bist offline",
     "offline": "Die App ist da, aber für deine Dokumente brauchen wir Netz. Versuch es wieder online."
   },

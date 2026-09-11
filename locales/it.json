@@ -168,6 +168,11 @@
     "install": "Installa l’app",
     "ios_title": "Aggiungi alla Home",
     "ios_hint": "Tocca Condividi, poi Aggiungi a Home. Poi puoi chiudere il browser.",
+    "how": "Icona sulla Home",
+    "how_lead": "L’app sul telefono o nella barra. Senza store.",
+    "how_ios": "iPhone: Condividi → Aggiungi a Home.",
+    "how_android": "Android Chrome: menu ⋮ → Aggiungi a schermata Home.",
+    "how_desktop": "Computer Chrome: menu ⋮ → Installa app (o l’icona nella barra degli indirizzi).",
     "offline_title": "Sei offline",
     "offline": "L’app c’è, ma serve la rete per caricare i documenti. Riprova quando sei online."
   },

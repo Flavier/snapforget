@@ -168,6 +168,11 @@
     "install": "Installer l’app",
     "ios_title": "Ajouter à l’écran d’accueil",
     "ios_hint": "Appuyez sur Partager, puis Sur l’écran d’accueil. Ensuite, vous pouvez fermer le navigateur.",
+    "how": "Icône sur l’écran d’accueil",
+    "how_lead": "L’appli sur le téléphone ou dans la barre. Sans store.",
+    "how_ios": "iPhone : Partager → Sur l’écran d’accueil.",
+    "how_android": "Android Chrome : menu ⋮ → Ajouter à l’écran d’accueil.",
+    "how_desktop": "Ordinateur Chrome : menu ⋮ → Installer l’appli (ou l’icône dans la barre d’adresse).",
     "offline_title": "Vous êtes hors ligne",
     "offline": "L’app est là, mais il faut un réseau pour charger vos documents. Réessayez une fois en ligne."
   },

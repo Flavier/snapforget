@@ -168,6 +168,11 @@
     "install": "Instalar app",
     "ios_title": "Añadir a inicio",
     "ios_hint": "Pulsa Compartir y luego Añadir a pantalla de inicio. Después puedes cerrar el navegador.",
+    "how": "Icono en el inicio",
+    "how_lead": "La app en el teléfono o en la barra. Sin tienda.",
+    "how_ios": "iPhone: Compartir → Añadir a pantalla de inicio.",
+    "how_android": "Android Chrome: menú ⋮ → Añadir a pantalla de inicio.",
+    "how_desktop": "PC Chrome: menú ⋮ → Instalar app (o el icono en la barra de direcciones).",
     "offline_title": "Estás sin conexión",
     "offline": "La app está aquí, pero hace falta red para cargar tus documentos. Inténtalo cuando vuelvas a estar en línea."
   },

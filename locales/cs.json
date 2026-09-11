@@ -175,6 +175,11 @@
     "install": "Nainstalovat aplikaci",
     "ios_title": "Přidat na plochu",
     "ios_hint": "Klepni na Sdílet a pak Přidat na plochu. Pak můžeš prohlížeč zavřít.",
+    "how": "Ikona na plochu",
+    "how_lead": "Aplikace v telefonu nebo na liště, bez obchodu.",
+    "how_ios": "iPhone: Sdílet → Přidat na plochu.",
+    "how_android": "Android Chrome: menu ⋮ → Přidat na plochu.",
+    "how_desktop": "Počítač Chrome: menu ⋮ → Nainstalovat aplikaci (nebo ikona v adresním řádku).",
     "offline_title": "Jsi offline",
     "offline": "Aplikace je tady, ale k načtení dokladů potřebujeme síť. Zkus to, až budeš online."
   },
