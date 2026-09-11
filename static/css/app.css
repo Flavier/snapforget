@@ -155,20 +155,6 @@ p { margin: 0 0 1rem; }
   min-height: 2.1rem;
 }
 .install-btn { white-space: nowrap; }
-.install-panel {
-  margin: 1.4rem 0 1.1rem;
-  padding: 1rem 1.05rem 1.1rem;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--card) 80%, white);
-}
-.install-panel h2 { margin: 0 0 0.4rem; font-size: 1.15rem; }
-.install-panel p { margin: 0 0 0.7rem; }
-.install-steps {
-  margin: 0 0 1rem;
-  padding-left: 1.15rem;
-}
-.install-steps li { margin: 0.35rem 0; }
 .inline { display: inline; margin: 0; }
 
 .ios-hint[hidden],

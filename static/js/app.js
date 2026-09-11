@@ -155,56 +155,41 @@
 
   let deferredPrompt = null;
   const installBtn = document.getElementById("install-app");
-  const installBtnAccount = document.getElementById("install-app-account");
   const iosHint = document.getElementById("ios-hint");
   const iosClose = document.getElementById("ios-hint-close");
-  const standalone =
-    window.matchMedia("(display-mode: standalone)").matches ||
-    window.navigator.standalone === true;
-
-  function showInstallHelp() {
-    if (window.location.pathname.indexOf("/app/account") === 0) {
-      const box = document.getElementById("install");
-      if (box && box.scrollIntoView) box.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-    if (iosHint) iosHint.hidden = false;
-  }
-
-  function runInstall() {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.finally(function () {
-        deferredPrompt = null;
-        if (installBtn) installBtn.hidden = true;
-        if (installBtnAccount) installBtnAccount.hidden = true;
-      });
-      return;
-    }
-    showInstallHelp();
-  }
 
   window.addEventListener("beforeinstallprompt", function (event) {
     event.preventDefault();
     deferredPrompt = event;
     if (installBtn) installBtn.hidden = false;
-    if (installBtnAccount) installBtnAccount.hidden = false;
     if (iosHint) iosHint.hidden = true;
   });
-  if (installBtn) installBtn.addEventListener("click", runInstall);
-  if (installBtnAccount) installBtnAccount.addEventListener("click", runInstall);
+  if (installBtn) {
+    installBtn.addEventListener("click", function () {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.finally(function () {
+        deferredPrompt = null;
+        installBtn.hidden = true;
+      });
+    });
+  }
   window.addEventListener("appinstalled", function () {
     if (installBtn) installBtn.hidden = true;
-    if (installBtnAccount) installBtnAccount.hidden = true;
-    if (iosHint) iosHint.hidden = true;
   });
 
-  if (standalone) {
-    if (installBtn) installBtn.hidden = true;
-    if (installBtnAccount) installBtnAccount.hidden = true;
-    if (iosHint) iosHint.hidden = true;
+  const ua = window.navigator.userAgent;
+  const chromeFamily = /Chrome|Chromium|CriOS|Edg|OPR|Android/i.test(ua);
+  const isIosSafari =
+    !chromeFamily &&
+    (/iPhone|iPod|iPad/i.test(ua) ||
+      (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1 && /Safari/i.test(ua)));
+  const standalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true;
+  if (iosHint && isIosSafari && !standalone && !window.sessionStorage.getItem("ios-hint-dismissed")) {
+    iosHint.hidden = false;
   }
-
   if (iosClose && iosHint) {
     iosClose.addEventListener("click", function () {
       iosHint.hidden = true;
