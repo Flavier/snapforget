@@ -7,4 +7,5 @@ itsdangerous==2.2.0
 python-dotenv==1.1.1
 starlette==0.47.3
 stripe==15.6.1
+pillow==11.3.0
 
