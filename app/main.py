@@ -871,6 +871,7 @@ def admin_home(
         filters=flt,
         listing=listing,
         qs=qs,
+        payments_ready=payments_ready(),
     )
 
 
@@ -1458,8 +1459,8 @@ def upgrade_checkout(request: Request, csrf_token: str = Form("")):
         return loc_redirect(request, "/upgrade")
     try:
         url = checkout_url(user, get_locale(request))
-    except Exception:
-        record(action="pay.checkout", status="fail", user=user, detail="stripe error")
+    except Exception as exc:
+        record(action="pay.checkout", status="fail", user=user, detail=str(exc)[:400])
         flash_set(request, "flash.pay_fail")
         return loc_redirect(request, "/upgrade")
     record(action="pay.checkout", user=user)

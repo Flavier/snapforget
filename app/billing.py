@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 from sqlalchemy import or_
 
+from .i18n import locale_path, normalize_locale
 from .mail import app_base_url
 from .models import ROOT, User
 
@@ -93,20 +94,19 @@ def payments_ready() -> bool:
 
 
 def _line_item() -> dict[str, Any]:
-    cents = amount_cents()
     pid = _price_id()
-    if cents is None:
-        return {"price": pid, "quantity": 1}
-    data: dict[str, Any] = {
-        "currency": "eur",
-        "unit_amount": cents,
-        "recurring": {"interval": "year"},
-    }
     if pid.startswith("price_"):
-        data["product"] = stripe.Price.retrieve(pid).product
-    else:
-        data["product_data"] = {"name": "Snap & Forget"}
-    return {"price_data": data, "quantity": 1}
+        return {"price": pid, "quantity": 1}
+    cents = amount_cents() or _DEFAULT_CENTS
+    return {
+        "price_data": {
+            "currency": "eur",
+            "unit_amount": cents,
+            "recurring": {"interval": "year"},
+            "product_data": {"name": "Snap & Forget"},
+        },
+        "quantity": 1,
+    }
 
 
 def _api() -> None:
@@ -128,25 +128,38 @@ def drop_customer(customer_id: str) -> None:
 
 def checkout_url(user: User, locale: str) -> str:
     _api()
+    base = app_base_url()
+    if _secret().startswith("sk_live_") and not base.lower().startswith("https://"):
+        raise stripe.StripeError("live checkout needs https APP_BASE_URL")
+    loc = normalize_locale(locale)
     params: dict[str, Any] = {
         "mode": "subscription",
-        "success_url": app_base_url() + "/upgrade/success?session_id={CHECKOUT_SESSION_ID}",
-        "cancel_url": app_base_url() + "/upgrade",
+        "success_url": (
+            f"{base}{locale_path(loc, '/upgrade/success')}"
+            "?session_id={CHECKOUT_SESSION_ID}"
+        ),
+        "cancel_url": f"{base}{locale_path(loc, '/upgrade')}",
         "client_reference_id": str(user.id),
         "line_items": [_line_item()],
         "allow_promotion_codes": True,
-        "branding_settings": {"display_name": "Snap & Forget"},
         "metadata": {"user_id": str(user.id)},
         "subscription_data": {"metadata": {"user_id": str(user.id)}},
     }
-    stripe_locale = _STRIPE_LOCALE.get(locale)
+    stripe_locale = _STRIPE_LOCALE.get(loc)
     if stripe_locale:
         params["locale"] = stripe_locale
     if user.stripe_customer_id:
         params["customer"] = user.stripe_customer_id
     else:
         params["customer_email"] = user.email
-    session = stripe.checkout.Session.create(**params)
+    try:
+        session = stripe.checkout.Session.create(**params)
+    except stripe.InvalidRequestError:
+        if not params.get("customer"):
+            raise
+        params.pop("customer")
+        params["customer_email"] = user.email
+        session = stripe.checkout.Session.create(**params)
     url = session.url
     if not url:
         raise stripe.StripeError("no checkout url")

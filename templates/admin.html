@@ -5,7 +5,7 @@
 <section class="admin">
   <h1>{{ t('admin.title') }}</h1>
   <p class="lede">{{ t('admin.count', n=listing.total) }}</p>
-  <p class="muted">{{ t('admin.paid_note') }}</p>
+  <p class="muted">{% if payments_ready %}{{ t('admin.paid_note') }}{% else %}{{ t('admin.paid_note_off') }}{% endif %}</p>
 
   <form method="get" action="/admin" class="admin-filters">
     <label>
