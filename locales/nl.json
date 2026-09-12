@@ -1,7 +1,11 @@
 {
   "meta": {
-    "title": "Foto & vergeet",
-    "description": "Foto van paspoort, APK, verzekering of garantie. De datum gaat naar de agenda. Je kunt de app een jaar negeren."
+    "title": "Foto & vergeet — herinneringen voor APK, paspoort en garantie",
+    "description": "Foto van paspoort, APK, verzekering of garantie. Herinnering per mail. Je kunt de app een jaar negeren.",
+    "privacy_description": "Hoe Foto & vergeet foto’s, data en account bewaart, en hoe je alles wist.",
+    "terms_description": "Gebruiksvoorwaarden. Gratis account, betaald plan, en wat herinneringen niet vervangen.",
+    "login_description": "Log in om de data te zien die je al opsloeg.",
+    "register_description": "Maak een gratis account. Drie documenten, geen kaart."
   },
   "brand": "Foto & vergeet",
   "brand_line1": "Foto &",

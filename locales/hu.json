@@ -1,7 +1,11 @@
 {
   "meta": {
-    "title": "Fotózd és felejtsd",
-    "description": "Fotózz útlevelet, műszakit, biztosítást vagy jótállást. A dátum a naptárba kerül. Az appot egy évig ignorálhatod."
+    "title": "Fotózd és felejtsd — műszaki, útlevél és jótállás emlékeztető",
+    "description": "Fotózz útlevelet, műszakit, biztosítást vagy jótállást. E-mailben emlékeztetünk. Az appot egy évig ignorálhatod.",
+    "privacy_description": "Hogyan tárolja a Fotózd és felejtsd a fotókat, dátumokat és a fiókot, és hogyan törölheted.",
+    "terms_description": "Felhasználási feltételek. Ingyenes fiók, fizetős terv, és mit nem pótol az emlékeztető.",
+    "login_description": "Jelentkezz be a már elmentett dátumokhoz.",
+    "register_description": "Ingyenes fiók. Három dokumentum, bankkártya nélkül."
   },
   "brand": "Fotózd és felejtsd",
   "brand_line1": "Fotózd",

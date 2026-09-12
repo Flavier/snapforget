@@ -1,7 +1,11 @@
 {
   "meta": {
-    "title": "Foto e esquece",
-    "description": "Foto do passaporte, inspeção, seguro ou garantia. A data vai para o calendário. Podes ignorar a app durante um ano."
+    "title": "Foto e esquece — lembretes de inspeção, passaporte e garantia",
+    "description": "Foto do passaporte, inspeção, seguro ou garantia. Lembramos por e-mail. Podes ignorar a app durante um ano.",
+    "privacy_description": "Como a Foto e esquece guarda fotos, datas e a conta, e como apagar.",
+    "terms_description": "Termos de uso. Conta grátis, plano pago, e o que os avisos não substituem.",
+    "login_description": "Entra para ver as datas que já guardaste.",
+    "register_description": "Cria uma conta grátis. Três documentos, sem cartão."
   },
   "brand": "Foto e esquece",
   "brand_line1": "Foto",

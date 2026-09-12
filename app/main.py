@@ -72,15 +72,21 @@ from .google_cal import (
 )
 from .i18n import (
     DEFAULT_LOCALE,
+    LOCALES,
     days_label,
     format_date,
     html_lang,
     kinds,
     locale_choices,
+    locale_path,
+    guess_locale,
     normalize_locale,
-    pick_locale,
+    og_locale,
+    skip_locale_prefix,
     t,
+    with_locale_prefix,
 )
+from .locale_url import LocalePrefixMiddleware, remember_locale
 from .icons import ensure_icons
 from .images import ImageError, jpeg_for_vision, normalize_photo
 from .legal import legal_contact
@@ -103,6 +109,15 @@ load_dotenv(ROOT / ".env", override=True, interpolate=False)
 
 FREE_DOCUMENT_LIMIT = 3
 MAX_PHOTO_BYTES = 8 * 1024 * 1024
+_NOINDEX_PREFIXES = (
+    "/app",
+    "/admin",
+    "/internal",
+    "/forgot",
+    "/reset",
+    "/upgrade",
+    "/offline",
+)
 ALLOWED_PHOTO = {
     "image/jpeg",
     "image/jpg",
@@ -127,6 +142,7 @@ app.add_middleware(
 )
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts())
+app.add_middleware(LocalePrefixMiddleware)
 
 TEMPLATES_DIR = ROOT / "templates"
 STATIC_DIR = ROOT / "static"
@@ -134,10 +150,14 @@ templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 
 def get_locale(request: Request) -> str:
-    cookie = request.cookies.get("locale")
-    if cookie:
-        return normalize_locale(cookie)
-    return pick_locale(request.headers.get("accept-language"))
+    loc = getattr(request.state, "locale", None)
+    if loc:
+        return normalize_locale(loc)
+    return guess_locale(request.cookies.get("locale"), request.headers.get("accept-language"))
+
+
+def loc_redirect(request: Request, path: str, status_code: int = 303) -> RedirectResponse:
+    return RedirectResponse(url=locale_path(get_locale(request), path), status_code=status_code)
 
 
 def db_user(request: Request) -> User | None:
@@ -153,6 +173,53 @@ def db_user(request: Request) -> User | None:
 
 def flash_pop(request: Request) -> str | None:
     return request.session.pop("flash", None)
+
+
+def _noindex_path(path: str) -> bool:
+    return any(path == prefix or path.startswith(prefix + "/") for prefix in _NOINDEX_PREFIXES)
+
+
+def canonical_url(request: Request) -> str:
+    origin = app_base_url().rstrip("/")
+    bare = getattr(request.state, "bare_path", None) or request.url.path or "/"
+    if skip_locale_prefix(bare):
+        path = bare
+    else:
+        path = locale_path(get_locale(request), bare)
+    if path != "/" and path.endswith("/"):
+        path = path.rstrip("/")
+    return origin if path == "/" else f"{origin}{path}"
+
+
+def hreflang_alternates(request: Request) -> list[tuple[str, str]]:
+    bare = getattr(request.state, "bare_path", None) or request.url.path or "/"
+    if skip_locale_prefix(bare) or _noindex_path(bare):
+        return []
+    origin = app_base_url().rstrip("/")
+    items = [(code, f"{origin}{locale_path(code, bare)}") for code in LOCALES]
+    items.append(("x-default", f"{origin}{locale_path(DEFAULT_LOCALE, bare)}"))
+    return items
+
+
+def software_json_ld(locale: str) -> dict:
+    origin = app_base_url()
+    return {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": t(locale, "brand"),
+        "alternateName": ["Snap & Forget", "Odfoť a zabudni"],
+        "description": t(locale, "meta.description"),
+        "url": f"{origin.rstrip('/')}{locale_path(locale, '/')}",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web",
+        "inLanguage": html_lang(locale),
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR",
+            "description": t(locale, "landing.price_free"),
+        },
+    }
 
 
 def flash_set(request: Request, key: str) -> None:
@@ -231,6 +298,17 @@ def render(request: Request, name: str, status_code: int = 200, **ctx):
     if user and user.locale != locale:
         user.locale = locale
         request.state.db.commit()
+    names = dict(locale_choices())
+    bare = getattr(request.state, "bare_path", None) or request.url.path or "/"
+    query = request.url.query
+
+    def u(path: str) -> str:
+        return locale_path(locale, path)
+
+    def lang_url(code: str) -> str:
+        url = locale_path(normalize_locale(code), bare)
+        return f"{url}?{query}" if query else url
+
     response = templates.TemplateResponse(
         request,
         name,
@@ -239,6 +317,11 @@ def render(request: Request, name: str, status_code: int = 200, **ctx):
             "locale": locale,
             "html_lang": html_lang(locale),
             "locale_choices": locale_choices(),
+            "locale_name": names.get(locale, locale),
+            "u": u,
+            "lang_url": lang_url,
+            "hreflang": hreflang_alternates(request),
+            "og_locale_alternates": [og_locale(code) for code in LOCALES if code != locale],
             "user": user,
             "is_admin": is_admin(request),
             "kinds": kinds(locale),
@@ -254,17 +337,23 @@ def render(request: Request, name: str, status_code: int = 200, **ctx):
             "legal_name": legal_contact()["name"],
             "legal_email": legal_contact()["email"],
             "legal_address": legal_contact()["address"],
+            "canonical": canonical_url(request),
+            "og_locale": og_locale(locale),
+            "og_image": f"{app_base_url()}/static/og.png",
+            "json_ld": software_json_ld(locale),
+            "noindex": _noindex_path(request.url.path),
             **ctx,
         },
         status_code=status_code,
     )
-    if request.url.path.startswith("/admin"):
+    path = request.url.path
+    if _noindex_path(path):
         response.headers["X-Robots-Tag"] = "noindex, nofollow"
     return response
 
 
 def login_redirect(request: Request) -> RedirectResponse:
-    return RedirectResponse(url="/login", status_code=303)
+    return loc_redirect(request, "/login")
 
 
 def require_user(request: Request) -> User | RedirectResponse:
@@ -451,8 +540,9 @@ def _set_lang_response(request: Request, code: str) -> RedirectResponse:
         user.locale = locale
         request.state.db.commit()
         record(action="locale.set", user=user, detail=locale)
-    response = RedirectResponse(url=_safe_back(request), status_code=303)
-    response.set_cookie("locale", locale, max_age=60 * 60 * 24 * 365, samesite="lax")
+    dest = with_locale_prefix(_safe_back(request), locale)
+    response = RedirectResponse(url=dest, status_code=303)
+    remember_locale(response, locale)
     return response
 
 
@@ -475,7 +565,7 @@ def manifest(request: Request):
         "name": name,
         "short_name": t(locale, "brand_short"),
         "description": t(locale, "meta.description"),
-        "start_url": "/app",
+        "start_url": locale_path(locale, "/app"),
         "scope": "/",
         "display": "standalone",
         "orientation": "portrait-primary",
@@ -523,14 +613,14 @@ def offline(request: Request):
 @app.get("/")
 def landing(request: Request):
     if db_user(request):
-        return RedirectResponse(url="/app", status_code=303)
+        return loc_redirect(request, "/app")
     return render(request, "landing.html")
 
 
 @app.get("/login")
 def login_form(request: Request):
     if db_user(request):
-        return RedirectResponse(url="/app", status_code=303)
+        return loc_redirect(request, "/app")
     return render(request, "login.html", error=None, email="")
 
 
@@ -566,13 +656,13 @@ def login_submit(
         user.locale = get_locale(request)
         request.state.db.commit()
     record(action="auth.login", user=user)
-    return RedirectResponse(url="/app", status_code=303)
+    return loc_redirect(request, "/app")
 
 
 @app.get("/register")
 def register_form(request: Request):
     if db_user(request):
-        return RedirectResponse(url="/app", status_code=303)
+        return loc_redirect(request, "/app")
     return render(request, "register.html", error=None, email="")
 
 
@@ -594,7 +684,7 @@ def register_submit(
         return render(request, "register.html", error="auth.error_lock", email=email, status_code=429)
     if (website or "").strip():
         record(action="auth.register", status="fail", email=email, detail="honeypot")
-        return RedirectResponse(url="/login", status_code=303)
+        return loc_redirect(request, "/login")
     if accept != "1":
         record(action="auth.register", status="fail", email=email, detail="no privacy accept")
         return render(request, "register.html", error="auth.error_privacy", email=email, status_code=400)
@@ -622,7 +712,7 @@ def register_submit(
     rotate_session(request)
     request.session["uid"] = user.id
     record(action="auth.register", user=user, detail=user.locale or "")
-    return RedirectResponse(url="/app", status_code=303)
+    return loc_redirect(request, "/app")
 
 
 @app.get("/privacy")
@@ -637,7 +727,67 @@ def terms_page(request: Request):
 
 @app.get("/robots.txt")
 def robots_txt():
-    return Response("User-agent: *\nDisallow: /admin\n", media_type="text/plain")
+    origin = app_base_url()
+    body = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /app\n"
+        "Disallow: /*/app\n"
+        "Disallow: /admin\n"
+        "Disallow: /internal\n"
+        "Disallow: /forgot\n"
+        "Disallow: /*/forgot\n"
+        "Disallow: /reset\n"
+        "Disallow: /*/reset\n"
+        "Disallow: /upgrade\n"
+        "Disallow: /*/upgrade\n"
+        "Disallow: /offline\n"
+        "Disallow: /*/offline\n"
+        "Disallow: /lang\n"
+        f"Sitemap: {origin}/sitemap.xml\n"
+    )
+    return Response(body, media_type="text/plain")
+
+
+@app.get("/sitemap.xml")
+def sitemap_xml():
+    origin = app_base_url().rstrip("/")
+    today = date.today().isoformat()
+    urls = (
+        ("/", "weekly", "1.0"),
+        ("/register", "monthly", "0.6"),
+        ("/login", "monthly", "0.4"),
+        ("/privacy", "yearly", "0.3"),
+        ("/terms", "yearly", "0.3"),
+    )
+    chunks = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+        'xmlns:xhtml="http://www.w3.org/1999/xhtml">',
+    ]
+    for path, freq, priority in urls:
+        for loc in LOCALES:
+            page = f"{origin}{locale_path(loc, path)}"
+            alternates = "".join(
+                f'<xhtml:link rel="alternate" hreflang="{code}" '
+                f'href="{origin}{locale_path(code, path)}"/>'
+                for code in LOCALES
+            )
+            alternates += (
+                f'<xhtml:link rel="alternate" hreflang="x-default" '
+                f'href="{origin}{locale_path(DEFAULT_LOCALE, path)}"/>'
+            )
+            chunks.append(
+                "<url>"
+                f"<loc>{page}</loc>"
+                f"<lastmod>{today}</lastmod>"
+                f"<changefreq>{freq}</changefreq>"
+                f"<priority>{priority}</priority>"
+                f"{alternates}"
+                "</url>"
+            )
+    chunks.append("</urlset>")
+    return Response("\n".join(chunks) + "\n", media_type="application/xml")
 
 
 def _admin_gone():
@@ -727,7 +877,7 @@ def admin_home(
 @app.get("/forgot")
 def forgot_form(request: Request):
     if db_user(request):
-        return RedirectResponse(url="/app", status_code=303)
+        return loc_redirect(request, "/app")
     return render(request, "forgot.html", error=None, email="")
 
 
@@ -740,7 +890,7 @@ def forgot_submit(request: Request, email: str = Form(""), csrf_token: str = For
     if too_many(f"forgot-ip:{ip}", 8, 3600) or too_many(f"forgot-email:{email}", 5, 3600):
         record(action="auth.reset", status="fail", email=email, detail="rate limit")
         flash_set(request, "flash.reset_sent")
-        return RedirectResponse(url="/login", status_code=303)
+        return loc_redirect(request, "/login")
     user = request.state.db.query(User).filter(User.email == email).one_or_none()
     if user:
         try:
@@ -752,13 +902,13 @@ def forgot_submit(request: Request, email: str = Form(""), csrf_token: str = For
     else:
         record(action="auth.reset", status="fail", email=email, detail="unknown email")
     flash_set(request, "flash.reset_sent")
-    return RedirectResponse(url="/login", status_code=303)
+    return loc_redirect(request, "/login")
 
 
 @app.get("/reset/{token}")
 def reset_form(request: Request, token: str):
     if db_user(request):
-        return RedirectResponse(url="/app", status_code=303)
+        return loc_redirect(request, "/app")
     if not user_from_reset(request.state.db, token):
         return render(request, "forgot.html", error="auth.error_reset", email="", status_code=400)
     return render(request, "reset.html", error=None, token=token)
@@ -785,7 +935,7 @@ def reset_submit(
     request.session["uid"] = user.id
     record(action="auth.reset", user=user, detail="password changed")
     flash_set(request, "flash.reset_ok")
-    return RedirectResponse(url="/app", status_code=303)
+    return loc_redirect(request, "/app")
 
 
 @app.post("/logout")
@@ -797,7 +947,7 @@ def logout(request: Request, csrf_token: str = Form("")):
     if user:
         record(action="auth.logout", user=user)
     flash_set(request, "flash.logged_out")
-    return RedirectResponse(url="/", status_code=303)
+    return loc_redirect(request, "/")
 
 
 @app.get("/app")
@@ -852,7 +1002,7 @@ def account_delete(
     rotate_session(request)
     record(action="auth.delete", detail=f"user={uid}")
     flash_set(request, "flash.account_deleted")
-    return RedirectResponse(url="/", status_code=303)
+    return loc_redirect(request, "/")
 
 
 @app.get("/app/google/connect")
@@ -862,7 +1012,7 @@ def google_connect(request: Request):
         return user
     if not oauth_enabled():
         flash_set(request, "flash.google_need")
-        return RedirectResponse(url="/app", status_code=303)
+        return loc_redirect(request, "/app")
     state = secrets.token_urlsafe(24)
     request.session["google_oauth_state"] = state
     return RedirectResponse(url=authorize_url(request, state), status_code=303)
@@ -877,7 +1027,7 @@ def google_callback(request: Request, code: str = "", state: str = "", error: st
     if error or not code or not expected or state != expected:
         record(action="google.connect", status="fail", user=user, detail=error or "bad oauth state")
         flash_set(request, "flash.google_fail")
-        return RedirectResponse(url="/app", status_code=303)
+        return loc_redirect(request, "/app")
     try:
         payload = exchange_code(request, code)
         save_tokens(user, payload)
@@ -889,7 +1039,7 @@ def google_callback(request: Request, code: str = "", state: str = "", error: st
     except Exception as exc:
         record(action="google.connect", status="fail", user=user, detail=str(exc)[:200])
         flash_set(request, "flash.google_fail")
-    return RedirectResponse(url="/app", status_code=303)
+    return loc_redirect(request, "/app")
 
 
 @app.post("/app/google/disconnect")
@@ -905,7 +1055,7 @@ def google_disconnect(request: Request, csrf_token: str = Form("")):
     request.state.db.commit()
     record(action="google.disconnect", user=user)
     flash_set(request, "flash.google_off")
-    return RedirectResponse(url="/app", status_code=303)
+    return loc_redirect(request, "/app")
 
 
 @app.get("/app/new")
@@ -915,7 +1065,7 @@ def new_form(request: Request):
         return user
     if over_free_limit(request, user):
         record(action="doc.limit", user=user, detail=f"free cap {FREE_DOCUMENT_LIMIT}")
-        return RedirectResponse(url="/upgrade", status_code=303)
+        return loc_redirect(request, "/upgrade")
     return render(
         request,
         "document_form.html",
@@ -1019,7 +1169,7 @@ async def new_submit(
         return user
     if over_free_limit(request, user):
         record(action="doc.limit", user=user, detail=f"free cap {FREE_DOCUMENT_LIMIT}")
-        return RedirectResponse(url="/upgrade", status_code=303)
+        return loc_redirect(request, "/upgrade")
     form = {
         "kind": kind,
         "title": title,
@@ -1077,7 +1227,7 @@ async def new_submit(
     )
     _sync_google(request, user, doc)
     request.state.db.commit()
-    return RedirectResponse(url=f"/app/{doc.id}", status_code=303)
+    return loc_redirect(request, f"/app/{doc.id}")
 
 
 @app.get("/app/{doc_id}")
@@ -1087,7 +1237,7 @@ def document_detail(request: Request, doc_id: int):
         return user
     doc = owned_document(request, user, doc_id)
     if not doc:
-        return RedirectResponse(url="/app", status_code=303)
+        return loc_redirect(request, "/app")
     summary, details = _calendar_copy(request, doc)
     return render(
         request,
@@ -1105,7 +1255,7 @@ def edit_form(request: Request, doc_id: int):
         return user
     doc = owned_document(request, user, doc_id)
     if not doc:
-        return RedirectResponse(url="/app", status_code=303)
+        return loc_redirect(request, "/app")
     return render(
         request,
         "document_form.html",
@@ -1148,7 +1298,7 @@ async def edit_submit(
         return user
     doc = owned_document(request, user, doc_id)
     if not doc:
-        return RedirectResponse(url="/app", status_code=303)
+        return loc_redirect(request, "/app")
     form = {
         "kind": kind,
         "title": title,
@@ -1205,7 +1355,7 @@ async def edit_submit(
     )
     _sync_google(request, user, doc)
     request.state.db.commit()
-    return RedirectResponse(url=f"/app/{doc.id}", status_code=303)
+    return loc_redirect(request, f"/app/{doc.id}")
 
 
 @app.post("/app/{doc_id}/delete")
@@ -1228,7 +1378,7 @@ def delete_document(request: Request, doc_id: int, csrf_token: str = Form("")):
         request.state.db.delete(doc)
         request.state.db.commit()
         flash_set(request, "flash.deleted")
-    return RedirectResponse(url="/app", status_code=303)
+    return loc_redirect(request, "/app")
 
 
 @app.get("/app/{doc_id}/ics")
@@ -1238,7 +1388,7 @@ def download_ics(request: Request, doc_id: int):
         return user
     doc = owned_document(request, user, doc_id)
     if not doc:
-        return RedirectResponse(url="/app", status_code=303)
+        return loc_redirect(request, "/app")
     record(action="cal.ics", user=user, document_id=doc.id, detail=doc.title)
     locale = get_locale(request)
     summary = t(locale, "detail.ics_summary", title=doc.title)
@@ -1299,19 +1449,19 @@ def upgrade_checkout(request: Request, csrf_token: str = Form("")):
     if isinstance(user, RedirectResponse):
         return user
     if user.is_paid:
-        return RedirectResponse(url="/app", status_code=303)
+        return loc_redirect(request, "/app")
     if not payments_ready():
         flash_set(request, "flash.pay_off")
-        return RedirectResponse(url="/upgrade", status_code=303)
+        return loc_redirect(request, "/upgrade")
     if too_many(f"pay:{user.id}", 8, 3600):
         flash_set(request, "flash.pay_fail")
-        return RedirectResponse(url="/upgrade", status_code=303)
+        return loc_redirect(request, "/upgrade")
     try:
         url = checkout_url(user, get_locale(request))
     except Exception:
         record(action="pay.checkout", status="fail", user=user, detail="stripe error")
         flash_set(request, "flash.pay_fail")
-        return RedirectResponse(url="/upgrade", status_code=303)
+        return loc_redirect(request, "/upgrade")
     record(action="pay.checkout", user=user)
     return RedirectResponse(url=url, status_code=303)
 
@@ -1329,7 +1479,7 @@ def upgrade_success(request: Request, session_id: str = ""):
     request.state.db.refresh(user)
     if user.is_paid:
         flash_set(request, "flash.paid")
-        return RedirectResponse(url="/app", status_code=303)
+        return loc_redirect(request, "/app")
     return render(request, "upgrade.html", payments_on=payments_ready(), pending=True, can_manage=False)
 
 
@@ -1346,7 +1496,7 @@ def billing_portal(request: Request, csrf_token: str = Form("")):
         url = None
     if not url:
         flash_set(request, "flash.pay_fail")
-        return RedirectResponse(url="/app/account", status_code=303)
+        return loc_redirect(request, "/app/account")
     record(action="pay.portal", user=user)
     return RedirectResponse(url=url, status_code=303)
 

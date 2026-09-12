@@ -1,4 +1,4 @@
-const CACHE = "snap-forget-v5";
+const CACHE = "snap-forget-v6";
 const PRECACHE = [
   "/",
   "/offline",
@@ -42,7 +42,7 @@ self.addEventListener("fetch", function (event) {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  if (url.pathname.startsWith("/app/") && url.pathname.endsWith("/photo")) {
+  if (/\/app\/[^/]+\/photo$/.test(url.pathname)) {
     return;
   }
 

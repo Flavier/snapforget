@@ -134,13 +134,23 @@ def csrf_matches(request: Request, token: str = "") -> bool:
     return _csrf_ok(got, expected)
 
 
+def locale_href(request: Request, path: str) -> str:
+    from .i18n import guess_locale, locale_path
+
+    loc = getattr(request.state, "locale", None) or guess_locale(
+        request.cookies.get("locale"),
+        request.headers.get("accept-language"),
+    )
+    return locale_path(loc, path)
+
+
 def csrf_fail(request: Request) -> Response:
-    path = request.url.path
+    path = getattr(request.state, "bare_path", None) or request.url.path
     if path.startswith("/admin"):
         return RedirectResponse(url="/admin/login", status_code=303)
     if path.endswith("/scan") or "application/json" in (request.headers.get("accept") or ""):
         return JSONResponse({"ok": False, "error": "csrf"}, status_code=403)
-    return RedirectResponse(url="/login", status_code=303)
+    return RedirectResponse(url=locale_href(request, "/login"), status_code=303)
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):

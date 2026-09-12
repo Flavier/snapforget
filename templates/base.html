@@ -4,27 +4,51 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{% block title %}{{ t('meta.title') }}{% endblock %}</title>
-  <meta name="description" content="{{ t('meta.description') }}">
+  <meta name="description" content="{% block meta_description %}{{ t('meta.description') }}{% endblock %}">
+  {% if noindex %}
+  <meta name="robots" content="noindex, nofollow">
+  {% endif %}
+  <link rel="canonical" href="{{ canonical }}">
+  {% for code, href in hreflang|default([]) %}
+  <link rel="alternate" hreflang="{{ code }}" href="{{ href }}">
+  {% endfor %}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ t('brand') }}">
+  <meta property="og:title" content="{{ self.title() }}">
+  <meta property="og:description" content="{{ self.meta_description() }}">
+  <meta property="og:url" content="{{ canonical }}">
+  <meta property="og:locale" content="{{ og_locale }}">
+  {% for alt in og_locale_alternates|default([]) %}
+  <meta property="og:locale:alternate" content="{{ alt }}">
+  {% endfor %}
+  <meta property="og:image" content="{{ og_image }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ self.title() }}">
+  <meta name="twitter:description" content="{{ self.meta_description() }}">
+  <meta name="twitter:image" content="{{ og_image }}">
   <meta name="theme-color" content="#f3eee4">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="{{ t('brand') }}">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="csrf-token" content="{{ csrf_token }}">
+  <meta name="locale-prefix" content="/{{ locale }}">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/static/favicon.svg?v=2" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/static/icons/apple-touch-180.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Mono:wght@400;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/css/app.css?v=20">
+  <link rel="stylesheet" href="/static/css/app.css?v=21">
   {% block extra_head %}{% endblock %}
 </head>
 <body{% if user and not is_admin %} class="has-tabbar"{% endif %}>
   <a class="skip" href="#main">Skip</a>
   <header class="top">
     <div class="top-inner">
-    <a class="brand" href="{% if user %}/app{% else %}/{% endif %}">
+    <a class="brand" href="{{ u('/app') if user else u('/') }}">
       <img class="brand-mark" src="/static/logo-mark.svg?v=2" width="40" height="40" alt="">
       <span class="brand-lockup">
         <span class="brand-lead">{{ t('brand_line1') }}</span>
@@ -32,14 +56,18 @@
       </span>
     </a>
     <nav class="nav">
-      <form class="lang-form" method="get" action="/lang">
-        <label class="sr-only" for="lang-select">{{ t('nav.language') }}</label>
-        <select id="lang-select" class="lang-pick" name="code">
-          {% for code, name in locale_choices %}
-          <option value="{{ code }}" {% if code == locale %}selected{% endif %}>{{ name }}</option>
-          {% endfor %}
-        </select>
-      </form>
+      <nav class="lang-switch" aria-label="{{ t('nav.language') }}">
+        <details class="lang-details">
+          <summary class="lang-pick">{{ locale_name }}</summary>
+          <ul class="lang-menu">
+            {% for code, name in locale_choices %}
+            <li>
+              <a href="{{ lang_url(code) }}" hreflang="{{ code }}" lang="{{ code }}"{% if code == locale %} aria-current="true"{% endif %}>{{ name }}</a>
+            </li>
+            {% endfor %}
+          </ul>
+        </details>
+      </nav>
       <button type="button" class="btn btn-small btn-ghost install-btn" id="install-app" hidden>{{ t('nav.install') }}</button>
       {% if is_admin %}
       <a class="nav-link" href="/admin">{{ t('admin.title') }}</a>
@@ -48,16 +76,16 @@
         <button type="submit" class="nav-link as-btn">{{ t('nav.logout') }}</button>
       </form>
       {% elif user %}
-      <a class="nav-link" href="/app">{{ t('nav.app') }}</a>
-      <a class="nav-link" href="/app/account">{{ t('nav.account') }}</a>
-      <a class="btn btn-small" href="/app/new">{{ t('nav.new') }}</a>
-      <form method="post" action="/logout" class="inline">
+      <a class="nav-link" href="{{ u('/app') }}">{{ t('nav.app') }}</a>
+      <a class="nav-link" href="{{ u('/app/account') }}">{{ t('nav.account') }}</a>
+      <a class="btn btn-small" href="{{ u('/app/new') }}">{{ t('nav.new') }}</a>
+      <form method="post" action="{{ u('/logout') }}" class="inline">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <button type="submit" class="nav-link as-btn">{{ t('nav.logout') }}</button>
       </form>
       {% else %}
-      <a class="nav-link nav-login" href="/login">{{ t('nav.login') }}</a>
-      <a class="btn btn-small" href="/register">{{ t('nav.register') }}</a>
+      <a class="nav-link nav-login" href="{{ u('/login') }}">{{ t('nav.login') }}</a>
+      <a class="btn btn-small" href="{{ u('/register') }}">{{ t('nav.register') }}</a>
       {% endif %}
     </nav>
     </div>
@@ -79,29 +107,29 @@
     <div class="foot-inner">
       <p>{{ t('landing.footer') }}</p>
       <p class="legal-links">
-        <a href="/privacy">{{ t('legal.privacy_title') }}</a>
+        <a href="{{ u('/privacy') }}">{{ t('legal.privacy_title') }}</a>
         ·
-        <a href="/terms">{{ t('legal.terms_title') }}</a>
+        <a href="{{ u('/terms') }}">{{ t('legal.terms_title') }}</a>
       </p>
     </div>
   </footer>
   {% if user and not is_admin %}
   {% set path = request.url.path %}
   <nav class="tabbar" aria-label="{{ t('nav.app') }}">
-    <a class="tab{% if path.startswith('/app') and '/account' not in path and path != '/app/new' and '/edit' not in path %} is-on{% endif %}" href="/app">
+    <a class="tab{% if path.startswith('/app') and '/account' not in path and path != '/app/new' and '/edit' not in path %} is-on{% endif %}" href="{{ u('/app') }}">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.4"/><rect x="13" y="4" width="7" height="7" rx="1.4"/><rect x="4" y="13" width="7" height="7" rx="1.4"/><rect x="13" y="13" width="7" height="7" rx="1.4"/></svg>
       <span>{{ t('nav.tab_app') }}</span>
     </a>
-    <a class="tab tab-add{% if path == '/app/new' or '/edit' in path %} is-on{% endif %}" href="/app/new">
+    <a class="tab tab-add{% if path == '/app/new' or '/edit' in path %} is-on{% endif %}" href="{{ u('/app/new') }}">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><path d="M12 8.4v7.2M8.4 12h7.2"/></svg>
       <span>{{ t('nav.tab_new') }}</span>
     </a>
-    <a class="tab{% if path.startswith('/app/account') %} is-on{% endif %}" href="/app/account">
+    <a class="tab{% if path.startswith('/app/account') %} is-on{% endif %}" href="{{ u('/app/account') }}">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.2"/><path d="M6.4 18.2c.9-2.6 3-4 5.6-4s4.7 1.4 5.6 4"/></svg>
       <span>{{ t('nav.tab_account') }}</span>
     </a>
   </nav>
   {% endif %}
-  <script src="/static/js/app.js?v=10" defer></script>
+  <script src="/static/js/app.js?v=11" defer></script>
 </body>
 </html>

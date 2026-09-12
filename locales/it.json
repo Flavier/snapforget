@@ -1,7 +1,11 @@
 {
   "meta": {
-    "title": "Scatta e dimentica",
-    "description": "Foto di passaporto, revisione, assicurazione o garanzia. La data va nel calendario. Puoi ignorare l’app per un anno."
+    "title": "Scatta e dimentica — promemoria revisione, passaporto e garanzia",
+    "description": "Foto di passaporto, revisione, assicurazione o garanzia. Promemoria via email. Puoi ignorare l’app per un anno.",
+    "privacy_description": "Come Scatta e dimentica conserva foto, date e account, e come cancellarli.",
+    "terms_description": "Condizioni d’uso. Account gratis, piano a pagamento, limiti dei promemoria.",
+    "login_description": "Accedi per vedere le date già salvate.",
+    "register_description": "Crea un account gratis. Tre documenti, senza carta."
   },
   "brand": "Scatta e dimentica",
   "brand_line1": "Scatta",

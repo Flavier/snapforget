@@ -6,6 +6,7 @@ venv/
 .env2.env
 .env2.paste.env
 .env.*
+envb64chunks/
 data/
 *.db
 .idea/

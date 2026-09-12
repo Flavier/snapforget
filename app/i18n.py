@@ -80,8 +80,27 @@ def _bundle(locale: str) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+_OG_LOCALE = {
+    "en": "en_US",
+    "de": "de_DE",
+    "es": "es_ES",
+    "fr": "fr_FR",
+    "pt": "pt_PT",
+    "it": "it_IT",
+    "pl": "pl_PL",
+    "nl": "nl_NL",
+    "cs": "cs_CZ",
+    "sk": "sk_SK",
+    "hu": "hu_HU",
+}
+
+
 def html_lang(locale: str) -> str:
     return _HTML_LANG.get(normalize_locale(locale), "en")
+
+
+def og_locale(locale: str) -> str:
+    return _OG_LOCALE.get(normalize_locale(locale), "en_US")
 
 
 def locale_choices() -> list[tuple[str, str]]:
@@ -189,3 +208,72 @@ def days_label(locale: str, days: int) -> str:
     if locale == "pl" and polish_few(days):
         return t(locale, "app.days_few", n=days)
     return t(locale, "app.days_many", n=days)
+
+
+_SKIP_LOCALE_EXACT = frozenset(
+    {
+        "/robots.txt",
+        "/sitemap.xml",
+        "/manifest.webmanifest",
+        "/sw.js",
+        "/openapi.json",
+        "/app/google/callback",
+    }
+)
+_SKIP_LOCALE_PREFIXES = (
+    "/static",
+    "/internal",
+    "/admin",
+    "/docs",
+    "/lang",
+)
+
+
+def locale_path(locale: str, path: str) -> str:
+    locale = normalize_locale(locale)
+    if not path:
+        path = "/"
+    if not path.startswith("/"):
+        path = "/" + path
+    if path != "/" and path.endswith("/"):
+        path = path.rstrip("/")
+    if path == "/":
+        return f"/{locale}"
+    return f"/{locale}{path}"
+
+
+def split_locale_prefix(path: str) -> tuple[str | None, str]:
+    if not path or path == "/":
+        return None, "/"
+    parts = path.strip("/").split("/", 1)
+    first = (parts[0] or "").lower()
+    if first not in LOCALES:
+        return None, path if path.startswith("/") else f"/{path}"
+    rest = f"/{parts[1]}" if len(parts) > 1 and parts[1] else "/"
+    if rest != "/" and rest.endswith("/"):
+        rest = rest.rstrip("/")
+    return first, rest
+
+
+def skip_locale_prefix(path: str) -> bool:
+    if path in _SKIP_LOCALE_EXACT:
+        return True
+    return any(path == prefix or path.startswith(prefix + "/") for prefix in _SKIP_LOCALE_PREFIXES)
+
+
+def guess_locale(cookie: str | None, accept_language: str | None) -> str:
+    if cookie:
+        return normalize_locale(cookie)
+    return pick_locale(accept_language)
+
+
+def with_locale_prefix(path_and_query: str, locale: str) -> str:
+    path, _, query = path_and_query.partition("?")
+    if not path:
+        path = "/"
+    found, bare = split_locale_prefix(path)
+    logical = bare if found else path
+    if skip_locale_prefix(logical) and not logical.startswith("/admin"):
+        return path_and_query
+    new_path = locale_path(locale, logical)
+    return f"{new_path}?{query}" if query else new_path

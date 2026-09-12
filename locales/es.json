@@ -1,7 +1,11 @@
 {
   "meta": {
-    "title": "Foto y olvida",
-    "description": "Foto del pasaporte, ITV, seguro o garantía. La fecha va al calendario. Puedes ignorar la app un año."
+    "title": "Foto y olvida — recordatorios de ITV, pasaporte y garantía",
+    "description": "Foto del pasaporte, ITV, seguro o garantía. Te avisamos por correo. Puedes ignorar la app un año.",
+    "privacy_description": "Cómo Foto y olvida guarda fotos, fechas y la cuenta, y cómo borrarlas.",
+    "terms_description": "Condiciones de uso. Cuenta gratis, pago, y lo que los avisos no sustituyen.",
+    "login_description": "Entra y verás las fechas que ya guardaste.",
+    "register_description": "Crea una cuenta gratis. Tres documentos, sin tarjeta."
   },
   "brand": "Foto y olvida",
   "brand_line1": "Foto",

@@ -1,7 +1,11 @@
 {
   "meta": {
-    "title": "Photo et oublie",
-    "description": "Photo du passeport, contrôle technique, assurance ou garantie. La date va dans le calendrier. Vous pouvez ignorer l’app un an."
+    "title": "Photo et oublie — rappels CT, passeport et garantie",
+    "description": "Photo du passeport, contrôle technique, assurance ou garantie. Rappel par e-mail. Vous pouvez ignorer l’app un an.",
+    "privacy_description": "Comment Photo et oublie stocke photos, dates et compte, et comment tout effacer.",
+    "terms_description": "Conditions d’utilisation. Compte gratuit, offre payante, limites des rappels.",
+    "login_description": "Connectez-vous pour voir les dates déjà enregistrées.",
+    "register_description": "Créez un compte gratuit. Trois documents, sans carte."
   },
   "brand": "Photo et oublie",
   "brand_line1": "Photo",

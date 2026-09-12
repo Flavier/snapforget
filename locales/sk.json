@@ -1,7 +1,11 @@
 {
   "meta": {
-    "title": "Odfoť a zabudni",
-    "description": "Odfoť STK, poistenie, pas alebo záruku. Termín ide do kalendára. Appku môžeš rok neotvoriť."
+    "title": "Odfoť a zabudni — pripomienka STK, pasu a záruk",
+    "description": "Odfoť STK, poistenie, pas alebo záruku. Termín ti pripomenieme mailom. Appku môžeš rok neotvoriť.",
+    "privacy_description": "Ako Odfoť a zabudni ukladá fotky, termíny a účet a ako to vieš zmazať.",
+    "terms_description": "Podmienky služby Odfoť a zabudni. Bezplatný účet, platba a čo pripomienky neriešia.",
+    "login_description": "Prihlás sa do Odfoť a zabudni a uvidíš termíny, ktoré už máš uložené.",
+    "register_description": "Založ si účet zadarmo. Tri doklady, bez karty."
   },
   "brand": "Odfoť a zabudni",
   "brand_line1": "Odfoť",

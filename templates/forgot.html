@@ -7,7 +7,7 @@
   {% if error %}
   <p class="error" role="alert">{{ t(error) }}</p>
   {% endif %}
-  <form method="post" action="/forgot" class="stack">
+  <form method="post" action="{{ u('/forgot') }}" class="stack">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <label>
       {{ t('auth.email') }}
@@ -15,6 +15,6 @@
     </label>
     <button class="btn" type="submit">{{ t('auth.forgot_submit') }}</button>
   </form>
-  <p class="muted"><a href="/login">{{ t('auth.to_login') }}</a></p>
+  <p class="muted"><a href="{{ u('/login') }}">{{ t('auth.to_login') }}</a></p>
 </section>
 {% endblock %}

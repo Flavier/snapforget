@@ -1,7 +1,11 @@
 {
   "meta": {
-    "title": "Knips & vergiss",
-    "description": "Foto von TÜV, Versicherung, Pass oder Garantie. Der Termin landet im Kalender. Die App kannst du ein Jahr ignorieren."
+    "title": "Knips & vergiss — TÜV, Pass und Garantie-Erinnerung",
+    "description": "Foto von TÜV, Versicherung, Pass oder Garantie. Wir erinnern per E-Mail. Die App kannst du ein Jahr ignorieren.",
+    "privacy_description": "Wie Knips & vergiss Fotos, Termine und Konto speichert und wie du sie löschst.",
+    "terms_description": "Nutzungsbedingungen. Kostenloses Konto, Abo, und was die Erinnerungen nicht ersetzen.",
+    "login_description": "Melde dich an und sieh die Termine, die du schon gespeichert hast.",
+    "register_description": "Kostenloses Konto. Drei Dokumente, keine Karte."
   },
   "brand": "Knips & vergiss",
   "brand_line1": "Knips &",

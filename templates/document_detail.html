@@ -4,7 +4,7 @@
 <article class="detail">
   <div class="detail-photo">
     {% if document.photo_path %}
-    <img src="/app/{{ document.id }}/photo" alt="{{ document.title }}">
+    <img src="{{ u('/app/' ~ document.id ~ '/photo') }}" alt="{{ document.title }}">
     {% else %}
     <div class="ph-lg">{{ t('detail.no_photo') }}</div>
     {% endif %}
@@ -26,26 +26,26 @@
         {% if google_event_url %}
         <a class="btn" href="{{ google_event_url }}" target="_blank" rel="noopener">{{ t('detail.google_open') }}</a>
         {% endif %}
-        <a class="btn btn-ghost" href="/app/{{ document.id }}/ics">{{ t('detail.ics') }}</a>
+        <a class="btn btn-ghost" href="{{ u('/app/' ~ document.id ~ '/ics') }}">{{ t('detail.ics') }}</a>
       </div>
       {% elif google_oauth %}
       <p class="hint">{{ t('detail.google_hint') }}</p>
       <div class="row-actions">
-        <a class="btn" href="/app/google/connect">{{ t('detail.google_connect') }}</a>
+        <a class="btn" href="{{ u('/app/google/connect') }}">{{ t('detail.google_connect') }}</a>
         <a class="btn btn-ghost" href="{{ google_url }}" target="_blank" rel="noopener">{{ t('detail.google_once') }}</a>
-        <a class="btn btn-ghost" href="/app/{{ document.id }}/ics">{{ t('detail.ics') }}</a>
+        <a class="btn btn-ghost" href="{{ u('/app/' ~ document.id ~ '/ics') }}">{{ t('detail.ics') }}</a>
       </div>
       {% else %}
       <div class="row-actions">
         <a class="btn" href="{{ google_url }}" target="_blank" rel="noopener">{{ t('detail.google_once') }}</a>
-        <a class="btn btn-ghost" href="/app/{{ document.id }}/ics">{{ t('detail.ics') }}</a>
+        <a class="btn btn-ghost" href="{{ u('/app/' ~ document.id ~ '/ics') }}">{{ t('detail.ics') }}</a>
       </div>
       {% endif %}
     </div>
 
     <div class="row-actions">
-      <a class="btn btn-ghost" href="/app/{{ document.id }}/edit">{{ t('detail.edit') }}</a>
-      <form method="post" action="/app/{{ document.id }}/delete" class="inline" data-confirm="{{ t('detail.delete_confirm') }}">
+      <a class="btn btn-ghost" href="{{ u('/app/' ~ document.id ~ '/edit') }}">{{ t('detail.edit') }}</a>
+      <form method="post" action="{{ u('/app/' ~ document.id ~ '/delete') }}" class="inline" data-confirm="{{ t('detail.delete_confirm') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <button type="submit" class="btn btn-danger">{{ t('detail.delete') }}</button>
       </form>

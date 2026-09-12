@@ -1,12 +1,13 @@
 (function () {
   const csrfMeta = document.querySelector('meta[name="csrf-token"]');
   const csrfToken = csrfMeta ? csrfMeta.getAttribute("content") || "" : "";
-  const langPick = document.getElementById("lang-select");
-  if (langPick && langPick.form) {
-    langPick.addEventListener("change", function () {
-      langPick.form.submit();
+  const prefixMeta = document.querySelector('meta[name="locale-prefix"]');
+  const localePrefix = prefixMeta ? prefixMeta.getAttribute("content") || "" : "";
+  document.querySelectorAll(".lang-details").forEach(function (el) {
+    document.addEventListener("click", function (ev) {
+      if (!el.contains(ev.target)) el.removeAttribute("open");
     });
-  }
+  });
   document.querySelectorAll("form[method='post' i], form[method='POST']").forEach(function (form) {
     if (!form.querySelector("input[name='csrf_token']") && csrfToken) {
       const input = document.createElement("input");
@@ -94,7 +95,7 @@
         assignFile(photo, blob, file.name);
         const body = new FormData();
         body.append("photo", blob, "document.jpg");
-        return fetch("/app/scan", {
+        return fetch(localePrefix + "/app/scan", {
           method: "POST",
           body: body,
           credentials: "same-origin",

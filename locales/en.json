@@ -1,7 +1,11 @@
 {
   "meta": {
-    "title": "Snap & Forget",
-    "description": "Snap a passport, MOT, insurance or warranty. The date goes on the calendar. You can ignore the app for a year."
+    "title": "Snap & Forget — MOT, passport and warranty reminders",
+    "description": "Snap a passport, MOT, insurance or warranty. We email you the date. You can ignore the app for a year.",
+    "privacy_description": "How Snap & Forget stores photos, dates and account data, and how you can delete them.",
+    "terms_description": "Terms of use for Snap & Forget. Free plan, paid plan, and what the reminders do not replace.",
+    "login_description": "Log in to Snap & Forget and see the dates you already saved.",
+    "register_description": "Create a free Snap & Forget account. Three documents, no card."
   },
   "brand": "Snap & Forget",
   "brand_line1": "Snap &",

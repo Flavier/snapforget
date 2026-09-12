@@ -1,4 +1,9 @@
 {% extends "base.html" %}
+{% block extra_head %}
+{% if json_ld %}
+<script type="application/ld+json">{{ json_ld | tojson }}</script>
+{% endif %}
+{% endblock %}
 {% block content %}
 <section class="hero">
   <div class="hero-copy">
@@ -6,8 +11,8 @@
     <h1>{{ t('landing.headline') }}</h1>
     <p class="lede">{{ t('landing.sub') }}</p>
     <div class="hero-actions">
-      <a class="btn btn-lg" href="/register">{{ t('landing.cta') }}</a>
-      <a class="btn btn-ghost btn-lg" href="/login">{{ t('landing.cta_secondary') }}</a>
+      <a class="btn btn-lg" href="{{ u('/register') }}">{{ t('landing.cta') }}</a>
+      <a class="btn btn-ghost btn-lg" href="{{ u('/login') }}">{{ t('landing.cta_secondary') }}</a>
     </div>
     <p class="trust">{{ t('landing.trust') }}</p>
   </div>
@@ -94,13 +99,13 @@
     <div class="price-card">
       <p class="price-tag">{{ t('landing.price_try') }}</p>
       <p class="price-label">{{ t('landing.price_free') }}</p>
-      <a class="btn btn-ghost" href="/register">{{ t('landing.cta') }}</a>
+      <a class="btn btn-ghost" href="{{ u('/register') }}">{{ t('landing.cta') }}</a>
     </div>
     <div class="price-card is-paid">
       <p class="price-tag">{{ t('landing.price_year') }}</p>
       <p class="price-label">{{ t('landing.price_paid') }}</p>
       <p class="muted">{{ t('landing.price_note') }}</p>
-      <a class="btn" href="/register">{{ t('landing.cta') }}</a>
+      <a class="btn" href="{{ u('/register') }}">{{ t('landing.cta') }}</a>
     </div>
   </div>
 </section>

@@ -1,7 +1,11 @@
 {
   "meta": {
-    "title": "Pstryk i zapomnij",
-    "description": "Zdjęcie paszportu, przeglądu, ubezpieczenia lub gwarancji. Termin trafia do kalendarza. Aplikację możesz ignorować przez rok."
+    "title": "Pstryk i zapomnij — przypomnienia przeglądu, paszportu i gwarancji",
+    "description": "Zdjęcie paszportu, przeglądu, ubezpieczenia lub gwarancji. Przypomnimy mailem. Aplikację możesz ignorować przez rok.",
+    "privacy_description": "Jak Pstryk i zapomnij przechowuje zdjęcia, terminy i konto, i jak to usunąć.",
+    "terms_description": "Regulamin. Darmowe konto, płatny plan i czego przypomnienia nie zastąpią.",
+    "login_description": "Zaloguj się, żeby zobaczyć zapisane terminy.",
+    "register_description": "Załóż darmowe konto. Trzy dokumenty, bez karty."
   },
   "brand": "Pstryk i zapomnij",
   "brand_line1": "Pstryk",

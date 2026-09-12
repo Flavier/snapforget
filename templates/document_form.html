@@ -6,7 +6,7 @@
   {% if error %}
   <p class="error" role="alert">{{ t(error) }}</p>
   {% endif %}
-  <form method="post" enctype="multipart/form-data" class="stack" action="{{ '/app/new' if mode == 'new' else '/app/' ~ document.id ~ '/edit' }}">
+  <form method="post" enctype="multipart/form-data" class="stack" action="{{ u('/app/new') if mode == 'new' else u('/app/' ~ document.id ~ '/edit') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <input type="hidden" name="scan_token" id="scan_token" value="">
     <div class="photo-field">
@@ -15,7 +15,7 @@
         <input id="photo" type="file" name="photo" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" capture="environment">
         <span class="drop-preview">
           {% if document and document.photo_path %}
-          <img src="/app/{{ document.id }}/photo" alt="">
+          <img src="{{ u('/app/' ~ document.id ~ '/photo') }}" alt="">
           {% endif %}
         </span>
         <span class="drop-cta">{{ t('form.photo_change') }}</span>
@@ -65,7 +65,7 @@
 
     <div class="row-actions">
       <button class="btn" type="submit">{{ t('form.save') }}</button>
-      <a class="btn btn-ghost" href="{{ '/app/' ~ document.id if document else '/app' }}">{{ t('form.cancel') }}</a>
+      <a class="btn btn-ghost" href="{{ u('/app/' ~ document.id) if document else u('/app') }}">{{ t('form.cancel') }}</a>
     </div>
   </form>
 </section>

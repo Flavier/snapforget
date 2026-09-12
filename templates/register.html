@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 {% block title %}{{ t('auth.register_title') }} · {{ t('brand') }}{% endblock %}
+{% block meta_description %}{{ t('meta.register_description') }}{% endblock %}
 {% block content %}
 <section class="narrow panel">
   <h1>{{ t('auth.register_title') }}</h1>
   {% if error %}
   <p class="error" role="alert">{{ t(error) }}</p>
   {% endif %}
-  <form method="post" action="/register" class="stack">
+  <form method="post" action="{{ u('/register') }}" class="stack">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <input class="hp" type="text" name="website" value="" tabindex="-1" autocomplete="off" aria-hidden="true">
     <label>
@@ -22,9 +23,9 @@
       <input type="checkbox" name="accept" value="1" required>
       <span>{{ t('auth.accept_privacy') }}</span>
     </label>
-    <p class="hint"><a href="/privacy">{{ t('legal.privacy_title') }}</a> · <a href="/terms">{{ t('legal.terms_title') }}</a></p>
+    <p class="hint"><a href="{{ u('/privacy') }}">{{ t('legal.privacy_title') }}</a> · <a href="{{ u('/terms') }}">{{ t('legal.terms_title') }}</a></p>
     <button class="btn" type="submit">{{ t('auth.submit_register') }}</button>
   </form>
-  <p class="muted"><a href="/login">{{ t('auth.to_login') }}</a></p>
+  <p class="muted"><a href="{{ u('/login') }}">{{ t('auth.to_login') }}</a></p>
 </section>
 {% endblock %}

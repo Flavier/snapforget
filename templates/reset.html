@@ -6,7 +6,7 @@
   {% if error %}
   <p class="error" role="alert">{{ t(error) }}</p>
   {% endif %}
-  <form method="post" action="/reset/{{ token }}" class="stack">
+  <form method="post" action="{{ u('/reset/' ~ token) }}" class="stack">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <label>
       {{ t('auth.password') }}
