@@ -12,7 +12,7 @@
     <div class="photo-field">
       <p class="label">{{ t('form.photo') }}</p>
       <label class="drop">
-        <input id="photo" type="file" name="photo" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" capture="environment">
+        <input id="photo" type="file" name="photo" accept="image/jpeg,image/png,image/webp,image/heic,image/heif">
         <span class="drop-preview">
           {% if document and document.photo_path %}
           <img src="{{ u('/app/' ~ document.id ~ '/photo') }}" alt="">
